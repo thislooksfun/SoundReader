@@ -7,7 +7,7 @@ public class Utils
 {
 	public static final Object THREAD_LOCK = new Object();
 
-	public static boolean wait(int seconds)
+	public synchronized static boolean wait(int seconds)
 	{
 		synchronized (THREAD_LOCK) {
 			try
