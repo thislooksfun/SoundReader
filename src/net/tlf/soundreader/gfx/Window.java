@@ -24,7 +24,7 @@ public class Window extends JFrame
 		
 		setSize(1000, 800);
 		setMinimumSize(new Dimension(100, 100));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 	}
 }
