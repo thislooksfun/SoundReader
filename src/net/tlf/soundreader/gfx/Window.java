@@ -18,7 +18,7 @@ public class Window extends JFrame
 	
 	private void initUI()
 	{
-		setTitle("Hello!");
+		setTitle("COLORS!! :D");
 		
 		add(this.surface);
 		
