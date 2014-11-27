@@ -1,5 +1,8 @@
 package net.tlf.soundreader.Main;
 
+import java.awt.event.KeyEvent;
+
+import net.tlf.soundreader.Util.Keyboard;
 import net.tlf.soundreader.Util.Utils;
 import net.tlf.soundreader.gfx.Window;
 
@@ -14,6 +17,8 @@ public class SoundReader
 	
 	public static void main(String[] args)
 	{
+		Keyboard.init();
+		
 		window = new Window();
 		window.setVisible(true);
 		
@@ -22,7 +27,7 @@ public class SoundReader
 		int i = 0;
 		while (running)
 		{
-			Utils.waitmills(10);
+			Utils.waitmillis(10);
 			window.repaint();
 			
 			checkKeys();
@@ -38,6 +43,18 @@ public class SoundReader
 	
 	public static void checkKeys()
 	{
-//		Keyboard
+		if (Keyboard.isPressed(KeyEvent.VK_1))
+		{
+			window.surface.setCount(10);
+		} else if (Keyboard.isPressed(KeyEvent.VK_2))
+		{
+			window.surface.setCount(50);
+		} else if (Keyboard.isPressed(KeyEvent.VK_3))
+		{
+			window.surface.setCount(100);
+		} else if (Keyboard.isPressed(KeyEvent.VK_4))
+		{
+			window.surface.setCount(200);
+		}
 	}
 }
