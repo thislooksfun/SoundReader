@@ -55,6 +55,12 @@ public class SoundReader
 		} else if (Keyboard.isPressed(KeyEvent.VK_4))
 		{
 			window.surface.setCount(200);
+		} else if (Keyboard.isPressed(KeyEvent.VK_5))
+		{
+			window.surface.setCount(400);
+		}  else if (Keyboard.isPressed(KeyEvent.VK_6))
+		{
+			window.surface.setCount(5000);
 		}
 	}
 }
