@@ -74,6 +74,14 @@ public class Surface extends JPanel
 	
 	public void setCount(int i)
 	{
+		if (i <= 0) {
+			i = 1;
+		} else if (i > (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2)) {
+			i = (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2);
+		}
+		
+		System.out.println(i + " : " + Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+		
 		this.count = i;
 		this.heights = new float[i];
 		this.colors = new Color[i];
@@ -85,7 +93,8 @@ public class Surface extends JPanel
 	{
 		for (int i = 0; i < colors.length; i++)
 		{
-			colors[i] = new Color(this.r.nextInt(255), this.r.nextInt(255), this.r.nextInt(255));
+//			colors[i] = new Color(this.r.nextInt(255), this.r.nextInt(255), this.r.nextInt(255));
+			colors[i] = new Color(0, 0, 0);
 		}
 	}
 	
