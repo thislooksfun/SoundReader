@@ -22,7 +22,7 @@ public class Utils
 	 */
 	public synchronized static boolean wait(float seconds)
 	{
-		return waitmills((long)(seconds * 1000));
+		return waitmillis((long)(seconds * 1000));
 	}
 	
 	/**
@@ -31,7 +31,7 @@ public class Utils
 	 * @param mills The number of milliseconds to wait for
 	 * @return <code>true</code> if waiting times out<br><code>false</code> if waiting is interrupted
 	 */
-	public synchronized static boolean waitmills(long mills)
+	public synchronized static boolean waitmillis(long mills)
 	{
 		synchronized (TIMER)
 		{
