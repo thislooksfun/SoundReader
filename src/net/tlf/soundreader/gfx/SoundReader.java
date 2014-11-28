@@ -1,10 +1,10 @@
-package net.tlf.soundreader.Main;
+package net.tlf.soundreader.gfx;
 
 import java.awt.event.KeyEvent;
 
-import net.tlf.soundreader.Util.Keyboard;
-import net.tlf.soundreader.Util.Utils;
-import net.tlf.soundreader.gfx.Window;
+import net.tlf.soundreader.sound.MicReader;
+import net.tlf.soundreader.sound.Keyboard;
+import net.tlf.soundreader.sound.Utils;
 
 /**
  * @author thislooksfun
@@ -15,6 +15,8 @@ public class SoundReader
 	
 	public static boolean running = true;
 	
+	public static MicReader reader;
+	
 	public static void main(String[] args)
 	{
 		Keyboard.init();
@@ -23,6 +25,9 @@ public class SoundReader
 		window.setVisible(true);
 		
 		window.surface.setCount(100);
+		
+		reader = new MicReader();
+		(new Thread(reader, "MicReader")).start();
 		
 		int i = 0;
 		while (running)
@@ -58,7 +63,7 @@ public class SoundReader
 		} else if (Keyboard.isPressed(KeyEvent.VK_5))
 		{
 			window.surface.setCount(400);
-		}  else if (Keyboard.isPressed(KeyEvent.VK_6))
+		} else if (Keyboard.isPressed(KeyEvent.VK_6))
 		{
 			window.surface.setCount(5000);
 		}
