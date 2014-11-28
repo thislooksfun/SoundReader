@@ -33,7 +33,7 @@ public class MicReader implements Runnable
 	
 	private void init()
 	{
-		initialized = false;
+		this.initialized = false;
 		
 		try
 		{
@@ -46,22 +46,22 @@ public class MicReader implements Runnable
 				System.out.println(mixerInfo[cnt].getName());
 			}
 			
-			format = getAudioFormat();
+			this.format = getAudioFormat();
 			
-			DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, format);
+			DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, this.format);
 			
 			Mixer mixer = AudioSystem.getMixer(mixerInfo[0]);
 			
-			targetLine = (TargetDataLine)mixer.getLine(dataLineInfo);
-			targetLine.open(format);
-			targetLine.start();
+			this.targetLine = (TargetDataLine)mixer.getLine(dataLineInfo);
+			this.targetLine.open(this.format);
+			this.targetLine.start();
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 			System.exit(0);
 		}
 		
-		initialized = true;
+		this.initialized = true;
 	}
 	
 	private AudioFormat getAudioFormat()
@@ -76,9 +76,9 @@ public class MicReader implements Runnable
 	
 	private void read()
 	{
-		if (initialized)
+		if (this.initialized)
 		{
-			int count = targetLine.read(SoundReader.window.surface.data, 0, SoundReader.window.surface.data.length-1);
+			int count = this.targetLine.read(SoundReader.window.surface.data, 0, SoundReader.window.surface.data.length-1);
 			
 //			System.out.println("count = " + count);
 		} else
