@@ -1,1 +1,1 @@
-Manifest-Version: 1.0Main-Class: net.tlf.soundreader.main.SoundReader
+Manifest-Version: 1.0Main-Class: net.tlf.soundreader.gfx.SoundReader

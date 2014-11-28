@@ -2,7 +2,7 @@ package net.tlf.soundreader.sound;
 
 import javax.sound.sampled.*;
 
-import net.tlf.soundreader.main.SoundReader;
+import net.tlf.soundreader.gfx.SoundReader;
 
 /**
  * @author thislooksfun
