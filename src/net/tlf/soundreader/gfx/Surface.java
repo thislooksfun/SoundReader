@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
+import net.tlf.soundreader.main.SoundReader;
+
 /**
  * @author thislooksfun
  */

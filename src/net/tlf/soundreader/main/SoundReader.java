@@ -1,10 +1,11 @@
-package net.tlf.soundreader.gfx;
+package net.tlf.soundreader.main;
 
 import java.awt.event.KeyEvent;
 
+import net.tlf.soundreader.gfx.Window;
 import net.tlf.soundreader.sound.MicReader;
-import net.tlf.soundreader.sound.Keyboard;
-import net.tlf.soundreader.sound.Utils;
+import net.tlf.soundreader.util.Keyboard;
+import net.tlf.soundreader.util.Utils;
 
 /**
  * @author thislooksfun

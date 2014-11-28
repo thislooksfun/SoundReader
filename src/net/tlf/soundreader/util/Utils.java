@@ -1,4 +1,4 @@
-package net.tlf.soundreader.sound;
+package net.tlf.soundreader.util;
 
 /**
  * @author thislooksfun
