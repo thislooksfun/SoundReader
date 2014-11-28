@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
+import net.tlf.soundreader.main.SoundReader;
+
 /**
  * @author thislooksfun
  */
@@ -14,8 +16,9 @@ public class Surface extends JPanel
 	
 	private int count = 10;
 	
-	float[] heights = new float[count];
-	Color[] colors = new Color[count];
+	public byte data[] = new byte[(count*2)+1];
+	private float[] heights = new float[count];
+	private Color[] colors = new Color[count];
 	
 	protected Window w;
 	
@@ -32,6 +35,7 @@ public class Surface extends JPanel
 	
 	private void draw(Graphics2D g)
 	{
+		this.convertHeights();
 		
 		float pos = ((float)Math.ceil(this.w.getWidth() / (float)this.count-1));
 		
@@ -39,14 +43,13 @@ public class Surface extends JPanel
 		
 		g.setColor(Color.BLACK);
 		
-		g.drawString("" + (this.w.getWidth() / (float)this.count-1), 10, 15);
-		g.drawString("" + diff, 10, 30);
+		g.drawString("" + SoundReader.reader.updatesPerSecond, 10, 15);
 		
 		int nextStart = 0;
 		
 		for (int i = 0; i < count; i ++)
 		{
-			g.setColor(this.colors[i]);
+//			g.setColor(this.colors[i]);
 			
 			int height = ((int)(this.w.getHeight() * this.heights[i]));
 			g.fillRect(nextStart, this.w.getHeight() - height - 22, (int)pos-(diff >= 0 ? 0 : 1), height);
@@ -59,9 +62,16 @@ public class Surface extends JPanel
 		}
 	}
 	
+	public void convertHeights()
+	{
+		for (int i = 0; i < count; i++) {
+			this.heights[i] = (data[(i*2)+1] + 200F)/400F;
+		}
+	}
+	
 	public void update()
 	{
-		this.nextHeight();
+//		this.nextHeight();
 	}
 	
 	public void nextHeight()
@@ -83,18 +93,26 @@ public class Surface extends JPanel
 		System.out.println(i + " : " + Toolkit.getDefaultToolkit().getScreenSize().getWidth());
 		
 		this.count = i;
+		this.data = new byte[(i*2)+1];
 		this.heights = new float[i];
 		this.colors = new Color[i];
+		
 		this.nextColor();
+		
 		this.w.setMinimumSize(new Dimension(i*2, this.w.getMinimumSize().height));
+	}
+	
+	public int getCount()
+	{
+		return this.count;
 	}
 	
 	private void nextColor()
 	{
 		for (int i = 0; i < colors.length; i++)
 		{
-//			colors[i] = new Color(this.r.nextInt(255), this.r.nextInt(255), this.r.nextInt(255));
-			colors[i] = new Color(0, 0, 0);
+			colors[i] = new Color(this.r.nextInt(255), this.r.nextInt(255), this.r.nextInt(255));
+//			colors[i] = new Color(0, 0, 0);
 		}
 	}
 	
