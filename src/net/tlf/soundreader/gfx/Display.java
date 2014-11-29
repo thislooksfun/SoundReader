@@ -10,19 +10,20 @@ import net.tlf.soundreader.main.SoundReader;
 /**
  * @author thislooksfun
  */
-public class Surface extends JPanel
+public class Display extends JPanel
 {
 	Random r = new Random();
 	
 	private int count = 10;
 	
-	public byte data[] = new byte[(count*2)+1];
+//	public byte data[] = new byte[(count*2)+1]; //TODO Wave things
+	public byte data[] = new byte[count];       //TODO Actual data
 	private float[] heights = new float[count];
 	private Color[] colors = new Color[count];
 	
 	protected Window w;
 	
-	public Surface(Window window)
+	public Display(Window window)
 	{
 		this.w = window;
 		for (int i = 0; i < heights.length; i++)
@@ -65,7 +66,8 @@ public class Surface extends JPanel
 	public void convertHeights()
 	{
 		for (int i = 0; i < count; i++) {
-			this.heights[i] = (data[(i*2)+1] + 200F)/400F;
+			this.heights[i] = (data[(i*2)+1] + 200F)/400F; //TODO Wave things
+//			this.heights[i] = (data[i] + 200F)/400F;       //TODO Actual data
 		}
 	}
 	
@@ -93,7 +95,8 @@ public class Surface extends JPanel
 		System.out.println(i + " : " + Toolkit.getDefaultToolkit().getScreenSize().getWidth());
 		
 		this.count = i;
-		this.data = new byte[(i*2)+1];
+		this.data = new byte[(i*2)+1]; //TODO Wave things
+//		this.data = new byte[i];       //TODO Actual data
 		this.heights = new float[i];
 		this.colors = new Color[i];
 		

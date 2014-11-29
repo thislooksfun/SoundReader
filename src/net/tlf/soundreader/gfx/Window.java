@@ -9,7 +9,7 @@ import java.awt.*;
  */
 public class Window extends JFrame
 {
-	public final Surface surface = new Surface(this);
+	public final Display display = new Display(this);
 	
 	public Window()
 	{
@@ -18,9 +18,9 @@ public class Window extends JFrame
 	
 	private void initUI()
 	{
-		setTitle("COLORS!! :D");
+		setTitle("SoundReader");
 		
-		add(this.surface);
+		add(this.display);
 		
 		setSize(1000, 800);
 		setMinimumSize(new Dimension(100, 100));

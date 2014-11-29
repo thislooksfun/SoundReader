@@ -40,19 +40,60 @@ public class MicReader implements Runnable
 			//Get and display a list of
 			// available mixers.
 			Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-			System.out.println("Available mixers:");
-			for (int cnt = 0; cnt < mixerInfo.length; cnt++)
+			
+			if (mixerInfo.length <= 0)
 			{
-				System.out.println(mixerInfo[cnt].getName());
+				System.out.println("No mixers!");
+				return;
+			}
+			
+			System.out.println("Available mixers:");
+			
+			Mixer.Info input = null;
+			for (Mixer.Info info : mixerInfo)
+			{
+				System.out.println(info.getName());
+				if (info.getName().equals("Port Soundflower (2ch)"))
+				{
+					input = info;
+				}
+			}
+			
+			if (input == null)
+			{
+				input = mixerInfo[0];
 			}
 			
 			this.format = getAudioFormat();
 			
 			DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, this.format);
 			
-			Mixer mixer = AudioSystem.getMixer(mixerInfo[0]);
+			Mixer mixer = AudioSystem.getMixer(input);
 			
-			this.targetLine = (TargetDataLine)mixer.getLine(dataLineInfo);
+			try
+			{
+				this.targetLine = (TargetDataLine)mixer.getLine(dataLineInfo);
+			} catch (IllegalArgumentException e)
+			{
+				System.out.println("Supported formats:");
+				for (Line l : mixer.getSourceLines())
+				{
+					Line.Info info = l.getLineInfo();
+					if (info instanceof DataLine.Info)
+					{
+						DataLine.Info dataInfo = (DataLine.Info)info;
+						for (AudioFormat f : dataInfo.getFormats())
+						{
+							System.out.println(f+"\n");
+						}
+					}
+				}
+				
+				dataLineInfo = new DataLine.Info(TargetDataLine.class, this.format);
+				
+				mixer = AudioSystem.getMixer(mixerInfo[0]);
+				this.targetLine = (TargetDataLine)mixer.getLine(dataLineInfo);
+			}
 			this.targetLine.open(this.format);
 			this.targetLine.start();
 		} catch (Exception e)
@@ -78,8 +119,9 @@ public class MicReader implements Runnable
 	{
 		if (this.initialized)
 		{
-			int count = this.targetLine.read(SoundReader.window.surface.data, 0, SoundReader.window.surface.data.length-1);
-			
+			int count = this.targetLine.read(SoundReader.window.display.data, 0, SoundReader.window.display.data.length - 1); //TODO Wave things
+//			int count = this.targetLine.read(SoundReader.window.display.data, 0, SoundReader.window.display.data.length);   //TODO Actual data
+
 //			System.out.println("count = " + count);
 		} else
 		{
@@ -97,7 +139,7 @@ public class MicReader implements Runnable
 //		boolean first = true;
 //		int biggest = 0;
 //		int smallest = 0;
-//		for (byte b : SoundReader.window.surface.data)
+//		for (byte b : SoundReader.window.display.data)
 //		{
 //			if (b > biggest || first) {
 //				biggest = b;
