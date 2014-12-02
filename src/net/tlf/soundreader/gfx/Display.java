@@ -5,7 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
+import net.tlf.soundreader.main.Options;
 import net.tlf.soundreader.main.SoundReader;
+import net.tlf.soundreader.util.Utils;
 
 /**
  * @author thislooksfun
@@ -14,12 +16,10 @@ public class Display extends JPanel
 {
 	Random r = new Random();
 	
-	private int count = 10;
-	
 //	public byte data[] = new byte[(count*2)+1]; //TODO Wave things
-	public byte data[] = new byte[count];       //TODO Actual data
-	private float[] heights = new float[count];
-	private Color[] colors = new Color[count];
+	public byte data[] = new byte[Options.count];       //TODO Actual data
+	private float[] heights = new float[Options.count];
+	private Color[] colors = new Color[Options.count];
 	
 	protected Window w;
 	
@@ -38,9 +38,9 @@ public class Display extends JPanel
 	{
 		this.convertHeights();
 		
-		float pos = ((float)Math.ceil(this.w.getWidth() / (float)this.count-1));
+		float pos = ((float)Math.ceil(this.w.getWidth() / (float)Options.count-1));
 		
-		int diff = (int)(this.w.getWidth() - pos*this.count);
+		int diff = (int)(this.w.getWidth() - pos * Options.count);
 		
 		g.setColor(Color.BLACK);
 		
@@ -48,13 +48,12 @@ public class Display extends JPanel
 		
 		int nextStart = 0;
 		
-		for (int i = 0; i < count; i ++)
+		for (int i = 0; i < Options.count; i ++)
 		{
 //			g.setColor(this.colors[i]);
 			
-			int height = ((int)(this.w.getHeight() * this.heights[i]));
-			g.fillRect(nextStart, this.w.getHeight() - height - 22, (int)pos-(diff >= 0 ? 0 : 1), height);
-			
+			int height = ((int)(this.getHeight() * this.heights[i]));
+			g.fillRect(nextStart, this.getHeight() - height, (int)pos-((diff >= 0 ? 0 : 1) - (Options.gaps() ? 0 : 1)), height);
 			
 			nextStart += pos+(diff >= 0 ? 1 : 0);
 			if (diff >= 0) {
@@ -65,7 +64,7 @@ public class Display extends JPanel
 	
 	public void convertHeights()
 	{
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < Options.count; i++) {
 			this.heights[i] = (data[(i*2)+1] + 200F)/400F; //TODO Wave things
 //			this.heights[i] = (data[i] + 200F)/400F;       //TODO Actual data
 		}
@@ -78,36 +77,46 @@ public class Display extends JPanel
 	
 	public void nextHeight()
 	{
-		for (int i = 0; i < count; i ++)
+		for (int i = 0; i < Options.count; i ++)
 		{
 			this.heights[i] = this.r.nextFloat();
 		}
 	}
 	
-	public void setCount(int i)
+	public void setCount(int i) //TODO
 	{
+		int screenWidth = Utils.getScreenWidth();
 		if (i <= 0) {
 			i = 1;
-		} else if (i > (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2)) {
-			i = (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2);
+		} else if (i > (int)(screenWidth / (Options.gaps() ? 2 : 1))) {
+			i = (int)(screenWidth / (Options.gaps() ? 2 : 1));
 		}
 		
-		System.out.println(i + " : " + Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+		System.out.println(i + " : " + screenWidth);
 		
-		this.count = i;
+		Options.count = i;
 		this.data = new byte[(i*2)+1]; //TODO Wave things
 //		this.data = new byte[i];       //TODO Actual data
 		this.heights = new float[i];
 		this.colors = new Color[i];
 		
 		this.nextColor();
+		this.convertHeights();
 		
-		this.w.setMinimumSize(new Dimension(i*2, this.w.getMinimumSize().height));
+		this.setMinSizes(i, this.w.getMinimumSize().height);
 	}
 	
-	public int getCount()
+	private void setMinSizes(int width, int height)
 	{
-		return this.count;
+		if (width > Utils.getScreenWidth()) {
+			width = Utils.getScreenWidth();
+		}
+		this.w.setMinimumSize(new Dimension(width*(Options.gaps() ? 2 : 1), height));
+		
+		if (this.w.getX() + this.w.getWidth() > Utils.getScreenWidth())
+		{
+			this.w.setLocation(Utils.getScreenWidth() - this.w.getWidth(), this.w.getY());
+		}
 	}
 	
 	private void nextColor()

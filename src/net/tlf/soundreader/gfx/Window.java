@@ -18,13 +18,15 @@ public class Window extends JFrame
 	
 	private void initUI()
 	{
-		setTitle("SoundReader");
+		this.setTitle("SoundReader");
 		
-		add(this.display);
+		this.add(this.display);
 		
-		setSize(1000, 800);
-		setMinimumSize(new Dimension(100, 100));
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
+		this.setSize(1000, 800);
+		this.setMinimumSize(new Dimension(100, 100));
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		
+		this.getRootPane().putClientProperty("apple.awt.fullscreenable", true);
 	}
 }

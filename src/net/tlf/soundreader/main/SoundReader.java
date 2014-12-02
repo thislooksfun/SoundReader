@@ -21,8 +21,12 @@ public class SoundReader
 	private static final int updatesPerSecond = 60;
 	private static long millisBetween;
 	
+	public static final boolean isOSX = System.getProperty("os.name").contains("Mac OS X");
+	
 	public static void main(String[] args)
 	{
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SoundReader :D"); //Set menubar name
+		
 		Keyboard.init();
 		
 		window = new Window();
@@ -33,7 +37,7 @@ public class SoundReader
 		reader = new MicReader();
 		(new Thread(reader, "MicReader")).start();
 		
-		millisBetween = Math.round(1000/updatesPerSecond);
+		millisBetween = Math.round(1000 / updatesPerSecond);
 		System.out.println("millisBetween = " + millisBetween);
 		
 		int i = 0;
@@ -73,6 +77,12 @@ public class SoundReader
 		} else if (Keyboard.isPressed(KeyEvent.VK_6))
 		{
 			window.display.setCount(5000);
+		} else if (Keyboard.isPressed(KeyEvent.VK_7))
+		{
+			window.display.setCount(301);
+		} else if (Keyboard.isPressed(KeyEvent.VK_0))
+		{
+			Options.setGaps(!Options.gaps());
 		}
 	}
 }

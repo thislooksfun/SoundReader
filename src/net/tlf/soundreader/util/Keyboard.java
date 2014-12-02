@@ -12,11 +12,24 @@ public class Keyboard
 {
 	public static Map<Integer, Boolean> keys = new HashMap<>();
 	
+	public static boolean isPressed(int key, boolean allowRepeat)
+	{
+		synchronized (Utils.THREAD_LOCK)
+		{
+			boolean result = keys.containsKey(key) ? keys.get(key) : false;
+			if (result && !allowRepeat)
+			{
+				keys.remove(key);
+			}
+			return result;
+		}
+	}
+	
 	public static boolean isPressed(int key)
 	{
 		synchronized (Utils.THREAD_LOCK)
 		{
-			return keys.containsKey(key) ? keys.get(key) : false;
+			return isPressed(key, false);
 		}
 	}
 	

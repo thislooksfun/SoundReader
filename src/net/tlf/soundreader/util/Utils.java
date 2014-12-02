@@ -1,5 +1,7 @@
 package net.tlf.soundreader.util;
 
+import java.awt.*;
+
 /**
  * @author thislooksfun
  */
@@ -45,5 +47,10 @@ public class Utils
 		}
 		
 		return true;
+	}
+	
+	public static int getScreenWidth()
+	{
+		return Toolkit.getDefaultToolkit().getScreenSize().width;
 	}
 }
