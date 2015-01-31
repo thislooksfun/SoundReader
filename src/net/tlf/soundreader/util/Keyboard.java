@@ -10,16 +10,22 @@ import java.util.Map;
  */
 public class Keyboard
 {
-	public static Map<Integer, Boolean> keys = new HashMap<>();
+	public static Map<Integer, Long> keys = new HashMap<>();
 	
 	public static boolean isPressed(int key, boolean allowRepeat)
 	{
 		synchronized (Utils.THREAD_LOCK)
 		{
-			boolean result = keys.containsKey(key) ? keys.get(key) : false;
-			if (result && !allowRepeat)
+			boolean result = keys.containsKey(key);
+			if (result)
 			{
-				keys.remove(key);
+				if (allowRepeat)
+				{
+					result = keys.get(key) < System.currentTimeMillis();
+					if (result)
+						keys.put(key, System.currentTimeMillis() + 100);
+				} else
+					keys.remove(key);
 			}
 			return result;
 		}
@@ -42,7 +48,10 @@ public class Keyboard
 			{
 				synchronized (Utils.THREAD_LOCK)
 				{
-					keys.put(ke.getKeyCode(), ke.getID() == KeyEvent.KEY_PRESSED);
+					if (ke.getID() == KeyEvent.KEY_PRESSED)
+						keys.put(ke.getKeyCode(), System.currentTimeMillis());
+					else if (ke.getID() == KeyEvent.KEY_RELEASED)
+						keys.remove(ke.getKeyCode());
 					
 					return false;
 				}
