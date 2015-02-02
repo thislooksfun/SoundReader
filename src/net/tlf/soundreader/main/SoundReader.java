@@ -1,13 +1,19 @@
 package net.tlf.soundreader.main;
 
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 
 import ddf.minim.AudioInput;
 import ddf.minim.Minim;
 import ddf.minim.analysis.FFT;
 import ddf.minim.analysis.FourierTransform;
+import net.tlf.soundreader.render.BarBarRenderer;
+import net.tlf.soundreader.render.CurveBarRenderer;
+import net.tlf.soundreader.render.DataRenderer;
+import net.tlf.soundreader.render.FlatBarRenderer;
 import net.tlf.soundreader.util.Keyboard;
 import processing.core.PApplet;
+import processing.core.PFont;
 
 /**
  * @author thislooksfun
@@ -19,12 +25,9 @@ public class SoundReader extends PApplet
 	Minim minim;
 	AudioInput in;
 	FFT fft;
-	float[] lastData = new float[0];
+	PFont century;
 	
-	public static void main(String[] args)
-	{
-		PApplet.main(new String[]{"net.tlf.soundreader.main.SoundReader"});
-	}
+	private HashMap<String, DataRenderer> renderers = new HashMap<>();
 	
 	@Override
 	public void setup()
@@ -33,6 +36,8 @@ public class SoundReader extends PApplet
 		if (frame != null) frame.setResizable(true);
 		
 		Options.updateData(this.width);
+		
+		century = this.loadFont("HelveticaNeue-Light-15.vlw");
 		
 		//barSize = (barNumber);
 		//start = barSize/2 + 2;
@@ -47,6 +52,26 @@ public class SoundReader extends PApplet
 		fft.window(FourierTransform.HAMMING);
 		
 		Keyboard.init();
+		
+		this.addRenderer(new CurveBarRenderer(this));
+		this.addRenderer(new FlatBarRenderer(this));
+		this.addRenderer(new BarBarRenderer(this));
+	}
+	
+	public void addRenderer(DataRenderer r)
+	{
+		if (r == null || r.name() == null)
+		{
+			System.err.println("[addRenderer] ############# ERROR #############");
+			System.err.println("[addRenderer] Renderer or name is null!");
+			System.err.println("[addRenderer] Renderer: " + r);
+			if (r != null)
+				System.err.println("[addRenderer] Name: " + r.name());
+			System.err.println("[addRenderer] ############# ERROR #############");
+			System.err.println();
+			return;
+		}
+		renderers.put(r.name(), r);
 	}
 	
 	@Override
@@ -61,26 +86,19 @@ public class SoundReader extends PApplet
 		background(0, 0, 0);
 		
 		fft.forward(in.mix);
-		float[] tempData = new float[fft.specSize()];
+		float[] rawData = new float[fft.specSize()];
 		for (int i = 0; i < fft.specSize(); i++)
-			tempData[i] = fft.getBand(i) * Options.scaleFactor;
+			rawData[i] = fft.getBand(i) * Options.scaleFactor;
 		
-		float[] data = limitData(flattenData(avgData(cullData(tempData, Options.barNumber), lastData)));
-		lastData = data;
 		
-		stroke(100, 0, 0);
-		switch (Options.graphType)
+		DataRenderer r = this.renderers.get(Options.graphType);
+		if (r == null)
 		{
-			case 0:
-				this.renderCurveBar(data);
-				break;
-			case 1:
-				this.renderStraightBar(data);
-				break;
-			case 2:
-				this.renderBarBar(data);
-				break;
+			//Just in case the renderer is ever null, default back to the curved renderer
+			Options.graphType = "tlf:curve_bar";
+			r = this.renderers.get(Options.graphType);
 		}
+		r.render(r.formatData(rawData));
 		
 		//println(fft.getFreq(110));
 		// draw the waveforms
@@ -94,117 +112,9 @@ public class SoundReader extends PApplet
 		{
 			stroke(100);
 			fill(255);
-			this.text(Options.graphType + " : " + (Options.graphType == 0 ? "Curved bar graph" : (Options.graphType == 1 ? "Straight bar graph" : "Bar bar graph")), 10, 20);
+			textFont(century);
+			this.text("Renderer: " + Options.graphType, 10, 25);
 		}
-	}
-	
-	/** Bar graph made of lines with rounded ends */
-	private void renderCurveBar(float[] data)
-	{
-		strokeWeight(Options.barLineSize);
-		for (int i = 0; i < data.length-1; i++)
-		{
-			if (Options.debug && i == data.length - 2) stroke(0, 100, 0);
-			line(Options.start + (i * Options.space), height - data[i+1] - Options.restingSize, Options.start + (i * Options.space), height);
-		}
-	}
-	
-	/** Bar graph made of lines with straight ends */
-	private void renderStraightBar(float[] data)
-	{
-		fill(100, 0, 0);
-		strokeWeight(2);
-		for (int i = 0; i < data.length-1; i++)
-		{
-			if (Options.debug && i == data.length - 2)
-			{
-				stroke(0, 100, 0);
-				fill(0, 100, 0);
-			}
-			int left = (int)(Options.start / 2.5 + (i * Options.space));
-			rect(left, height - data[i+1] - Options.restingSize - 5, Options.barSize, height);
-		}
-	}
-	
-	/** Bar graph made of fixed horizontal lines */
-	private void renderBarBar(float[] data)
-	{
-		fill(100, 0, 0);
-		strokeWeight(2);
-		for (int i = 0; i < data.length-1; i++)
-		{
-			if (Options.debug && i == data.length - 2)
-			{
-				stroke(0, 100, 0);
-				fill(0, 100, 0);
-			}
-			int left = (int)(Options.start / 2.5 + (i * Options.space));
-			rect(left, height - data[i] - Options.restingSize - 5, Options.barSize, height);
-		}
-	}
-	
-	float[] cullData(float[] data, int size)
-	{
-		size += 1;
-		float[] out = new float[size];
-		float tmp = data.length * 1.0f / size;
-		int window = (int)tmp;
-		if (tmp - (int)tmp >= 0.5) window++;
-		int avg = 0;
-		for (int i = 0; i < data.length; i++)
-		{
-			if (i / window >= size) break;
-			avg += data[i];
-			if (i % window == 0)
-			{
-				out[i / window] = avg / window;
-				avg = 0;
-			}
-		}
-		return out;
-	}
-	
-	float[] avgData(float[] data1, float[] data2)
-	{
-		float[] out;
-		if (data1.length == data2.length)
-		{
-			out = new float[data1.length];
-			for (int i = 0; i < data1.length; i++)
-				out[i] = (data1[i] + data2[i]) / 2;
-		} else if (data1.length > data2.length)
-		{
-			out = new float[data1.length];
-			for (int i = 0; i < data2.length; i++)
-				out[i] = (data1[i] + data2[i]) / 2;
-			System.arraycopy(data1, data2.length, out, data2.length, data1.length - data2.length);
-		} else if (data1.length < data2.length)
-		{
-			out = new float[data1.length];
-			for (int i = 0; i < data1.length; i++)
-				out[i] = (data1[i] + data2[i]) / 2;
-		} else
-			out = new float[0];
-		return out;
-	}
-	
-	float[] flattenData(float[] data)
-	{
-		for (int i = 0; i < data.length; i++)
-			data[i] *= (float)Math.log(i + 2) / 3;
-		
-		return data;
-	}
-	
-	float[] limitData(float[] data)
-	{
-		for (int i = 0; i < data.length; i++)
-		{
-			if (data[i] < 0) data[i] = 0;
-			if (data[i] > height) data[i] = height;
-		}
-		
-		return data;
 	}
 	
 	@Override
@@ -224,13 +134,13 @@ public class SoundReader extends PApplet
 			Options.setNumBars(80, true, this.width);
 		} else if (Keyboard.isPressed(KeyEvent.VK_1))
 		{
-			Options.graphType = 0;
+			Options.graphType = "tlf:curved_bar";
 		} else if (Keyboard.isPressed(KeyEvent.VK_2))
 		{
-			Options.graphType = 1;
+			Options.graphType = "tlf:flat_bar";
 		} else if (Keyboard.isPressed(KeyEvent.VK_3))
 		{
-			Options.graphType = 2;
+			Options.graphType = "tlf:bar_bar";
 		} else if (Keyboard.isPressed(KeyEvent.VK_0))
 		{
 			Options.debug = !Options.debug;

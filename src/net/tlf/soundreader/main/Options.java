@@ -22,11 +22,10 @@ public class Options
 	/** How tall the bars should be when there is no signal */
 	public static int restingSize = 3;
 	/** The type of graph to display<br>0: Line graph with curves<br>1: Line graph without curves<br>2: Bar graph*/
-	public static int graphType = 0;
+	public static String graphType = "tlf:curve_bar";
 	
-	
-	//Whether or not to preform various debug actions
-	public static boolean debug = true;
+	/** Whether or not to preform various debug actions */
+	public static boolean debug = false;
 	
 	public static void setNumBars(int numBars, boolean overrideData, int width)
 	{
